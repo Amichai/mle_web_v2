@@ -1,0 +1,117 @@
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --clr-text: hsl(204, 20%, 15%);
+  --clr-background: #ffffff;
+  --clr-primary: #8fb4ff;
+  --clr-secondary: hsl(222, 100%, 96%);
+  --clr-accent: #ff8f94;
+
+  --ff-accent: 'Lora', serif;
+  --ff-base: Inter;
+
+  --fs--2: clamp(0.78rem, calc(0.77rem + 0.03vw), 0.80rem);
+  --fs--1: clamp(0.94rem, calc(0.92rem + 0.11vw), 1.00rem);
+  --fs-0: clamp(1.13rem, calc(1.08rem + 0.22vw), 1.25rem);
+  --fs-1: clamp(1.35rem, calc(1.28rem + 0.37vw), 1.56rem);
+  --fs-2: clamp(1.62rem, calc(1.50rem + 0.58vw), 1.95rem);
+  --fs-3: clamp(1.94rem, calc(1.77rem + 0.87vw), 2.44rem);
+  --fs-4: clamp(2.33rem, calc(2.08rem + 1.25vw), 3.05rem);
+  --fs-5: clamp(2.80rem, calc(2.45rem + 1.77vw), 3.82rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --clr-text: hsl(204, 20%, 85%);
+    --clr-background: #000000;
+    --clr-primary: #8fb4ff;
+    --clr-secondary: hsl(222, 100%, 18%);
+    --clr-accent: #ff8f94;
+  }
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* color-scheme: light dark; */
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+body {
+  font-size: var(--fs-0);
+  line-height: 1.6;
+  font-family: var(--ff-base);
+  color: var(--clr-text);
+}
+
+h1, h2, h3 {
+  font-family: var(--ff-accent);
+  line-height: 1.1;
+  color: var(--clr-primary);
+  text-wrap: balance;
+}
+
+.wrapper {
+  width: min(100% - 3rem, 70ch);
+  margin-inline: auto;
+}
+
+.flow > * + *  {
+  margin-top: var(--flow-space, 1em); 
+}
+
+a {
+  color: var(--clr-primary)
+}
+
+a:hover, a:focus {
+  color: var(--clr-accent);
+}
+
+::marker {
+  color: var(--clr-primary);
+}
+
+h1 {
+  --flow-space: 2em;
+  margin-top: 1em;
+}
+
+h2, h3 {
+  --flow-space: 1.5em;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 100;
+  top: 2rem;
+  left: -120%;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}

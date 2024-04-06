@@ -16,10 +16,13 @@ const props = defineProps({
     <TabView>
       <TabPanel v-for="tab in tabs" :header="tab.header">
         <p class="m-0">
-          <component :is="tab.content" />
+          <component :is="tab.content" v-bind="tab.props" />
         </p>
       </TabPanel>
     </TabView>
   </div>
 </template>
 
+<style>
+
+</style>
