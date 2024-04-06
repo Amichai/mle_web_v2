@@ -10,6 +10,7 @@ import Divider from 'primevue/divider';
 import Calendar from 'primevue/calendar'
 import { useDataManager } from '../composables/useDataManager';
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics } from '../utils.js'
+import SlatesBuilder from './SlatesBuilder.vue';
 
 const props = defineProps()
 
@@ -45,12 +46,7 @@ watch(date, async () => {
       },
       {
         header: 'Slates',
-        content: ProjectionsTable,
-        props: { date, playerData },
-      },
-      {
-        header: 'Optimizer',
-        content: ProjectionsTable,
+        content: SlatesBuilder,
         props: { date, playerData },
       },
     ]" />
