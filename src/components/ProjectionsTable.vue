@@ -16,26 +16,28 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
 
-
-
 const props = defineProps({
 })
 
 const { queryNewsFeed, queryPlayerData, querySlateData, queryTeamData, querySlates } = useDataManager()
 
+
 const emits = defineEmits([])
-const selectedSite = ref('FanDuel')
 const selectedSlate = ref('')
 const slateToIdToOverride = localStorage.getItem('slateToIdToOverride') ? JSON.parse(localStorage.getItem('slateToIdToOverride')) : {}
-
-// const sites = [
-//   { name: 'FanDuel', code: 'FD' },
-//   { name: 'DraftKings', code: 'DK' },
-// ]
+const date = ref(getTodaysDate())
+const tableData = ref([])
+const isLoading = ref(false)
+const isOptimizerVisible = ref(true)
+const rosterCount = ref(10)
 
 const slates = ref([])
 
-const date = ref(getTodaysDate())
+const teamData = ref([])
+const playerData = ref([])
+const slateData = ref([])
+const isDataLoaded = ref(false)
+
 
 watch(() => date.value, async () => {
   await loadSlates()
@@ -52,27 +54,20 @@ const loadSlates = async () => {
 }
 
 onMounted(async () => {
-  await loadSlates()
+  await loadSlates() 
+  selectedSlate.value = slates.value[0]
 })
-
-const players = ref([])
-const tableData = ref([])
-const isLoading = ref(false)
 
 watch(() => selectedSlate.value, async (newSlate) => {
+  isDataLoaded.value = false
   tableData.value = []
   isLoading.value = true
-  const slateData = await querySlateData(newSlate.code, date.value)
-  const teamData = await queryTeamData(date.value)
-  const playerData = await queryPlayerData(date.value)
-
-  tableData.value = setupTableData(playerData, slateData, teamData, newSlate.code)
+  slateData.value = await querySlateData(newSlate.code, date.value)
+  teamData.value = await queryTeamData(date.value)
+  playerData.value = await queryPlayerData(date.value)
+  tableData.value = setupTableData(playerData.value, slateData.value, teamData.value, newSlate.code)
   isLoading.value = false
-})
-
-watch(() => props.playerData, async (newPlayerData) => {
-  selectedSlate.value = slates.value[0]
-  selectedSite.value = 'FanDuel'
+  isDataLoaded.value = true
 })
 
 const isNumeric = (value) => {
@@ -103,23 +98,25 @@ const resetRow = (row) => {
   localStorage.setItem('slateToIdToOverride', JSON.stringify(slateToIdToOverride))
 }
 
-const rosterCount = ref(10)
-
 const isSlateSelected = () => {
   return selectedSlate.value !== ''
 }
 
-const visible = ref(false)
-
 const openOptimizer = () => {
-  visible.value = true
+  isOptimizerVisible.value = true
 }
 </script>
 
 <template>
   <div class="card flex justify-content-center">
-      <Dialog v-model:visible="visible" modal header="Optimizer" :style="{ width: '25rem' }">
-          <OptimizerComponent />
+      <Dialog v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
+          <OptimizerComponent 
+            :slateData="slateData"
+            :teamData="teamData"
+            :playerData="playerData"
+            :isDataLoaded="isDataLoaded"
+            :rosterCount="rosterCount"
+            />
       </Dialog>
     </div>
 
