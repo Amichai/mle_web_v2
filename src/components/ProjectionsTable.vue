@@ -6,12 +6,16 @@ import Dropdown from 'primevue/dropdown';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Button from 'primevue/Button';
 import { useDataManager } from '../composables/useDataManager';
 
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics, getTodaysDateString } from '../utils.js'
 import Calendar from 'primevue/calendar'
 import { getTodaysDate } from '../utils.js';
+import OptimizerComponent from './OptimizerComponent.vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputNumber from 'primevue/inputnumber';
+
 
 
 const props = defineProps({
@@ -101,23 +105,24 @@ const resetRow = (row) => {
 
 const rosterCount = ref(10)
 
-const rosterCountChanged = () => {
-  if(rosterCount.value < 1) {
-    rosterCount.value = 1
-  }
-
-  if(rosterCount.value > 150) {
-    rosterCount.value = 150
-  }
-}
-
 const isSlateSelected = () => {
   return selectedSlate.value !== ''
 }
 
+const visible = ref(false)
+
+const openOptimizer = () => {
+  visible.value = true
+}
 </script>
 
 <template>
+  <div class="card flex justify-content-center">
+      <Dialog v-model:visible="visible" modal header="Optimizer" :style="{ width: '25rem' }">
+          <OptimizerComponent />
+      </Dialog>
+    </div>
+
   <div class="table-header">
     <div class="slate-selector-area">
       <Calendar v-model="date" />
@@ -125,9 +130,11 @@ const isSlateSelected = () => {
     </div>
 
     <div class="optimize-button-area">
-      <input class="override" type="number" v-model="rosterCount" @change="rosterCountChanged">
+      <InputNumber v-model="rosterCount" class="number-input" inputId="minmax-buttons" mode="decimal" showButtons 
+      :min="1" :max="150" />
+
       Rosters
-      <Button :disabled="!isSlateSelected()">
+      <Button :disabled="!isSlateSelected()" @click="openOptimizer">
         <img class="play-img" :src="playIcon" alt="optimize rosters" width="20">
         Optimize
       </Button>
@@ -158,7 +165,7 @@ const isSlateSelected = () => {
 
 </template>
 
-<style scoped>
+<style>
 .dropdown {
   width: 15rem;
 }
@@ -202,5 +209,12 @@ const isSlateSelected = () => {
 
 input {
   font-size: 0.9rem;
+}
+
+#minmax-buttons {
+}
+
+.p-inputnumber-input {
+  width: 4rem;
 }
 </style>
