@@ -209,9 +209,6 @@ input {
   font-size: 0.9rem;
 }
 
-#minmax-buttons {
-}
-
 .p-inputnumber-input {
   width: 4rem;
 }

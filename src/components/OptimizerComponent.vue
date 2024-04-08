@@ -7,7 +7,7 @@ import copyIcon from '@/assets/copy.png'
 import { useOptimizer } from '../composables/useOptimizer.js'
 import { useLocalStorage } from '../composables/useLocalStorage.js'
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet } from '../utils.js'
-import TabComponent from '../components/TabComponent.vue';
+import OptimizerTable from '../components/OptimizerTable.vue';
 
 const props = defineProps({
   slateData: {
@@ -43,6 +43,8 @@ const maxExposurePercentage = ref('1')
 const contestParams = ref([])
 const slatePlayerData = ref([])
 const isRosterDifferenceHighlighted = ref(false)
+const tableRows = ref([])
+const tableColumns = ref([])
 
 const averageRosterValue = computed(() => {
   if(rosterSet.value) {
@@ -147,7 +149,6 @@ const areRostersDifferent = (rosters1, rosters2) => {
 
 let timeoutId = null
 const rostersUpdatedCallback = (rosters) => {
-  console.log(rosters) 
   const areDifferent = areRostersDifferent(rosters, rosterSet.value)
   isRosterDifferenceHighlighted.value = areDifferent
   if(timeoutId) {
@@ -219,6 +220,24 @@ const constructRosterTable = () => {
   contestParams.value = getContestParams(props.selectedSlate)
 
   const { columnsToSet, costColumnIndex } = contestParams.value
+
+
+  let rows = Array.from({ length: props.rosterCount }, (_, index) => index).map(() => {
+    return ['', ...new Array(columnsToSet.length - 1).fill('')]
+  })
+
+  rosterSet.value.slice(0, props.rosterCount).forEach((roster, index) => {
+    const row = rows[index]
+    roster.players.forEach((player, playerIndex) => {
+      row[playerIndex] = player
+    })
+
+    row[costColumnIndex - 1] = roster.cost
+    row[costColumnIndex] = roster.value.toFixed(2)
+  })
+
+  tableRows.value = rows
+  tableColumns.value = columnsToSet
 }
 
 const optimizeHandler = () => {
@@ -235,6 +254,10 @@ const optimizeHandler = () => {
       <img :src="stopIcon" alt="optimize" width="30">
     </Button>
   </div>
+
+  <OptimizerTable
+    :tableColumns="tableColumns"
+    :tableRows="tableRows" />
 </template>
 
 <style>

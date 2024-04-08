@@ -13,10 +13,6 @@ const emits = defineEmits(['update:modelValue'])
 
 const maxExposure = ref(props.modelValue)
 
-const sliderClicked = (evt) => {
-    evt.stopPropagation()
-}
-
 watch(() => props.modelValue, (newVal) => {
   maxExposure.value = newVal
 })
