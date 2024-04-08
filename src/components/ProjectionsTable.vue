@@ -23,7 +23,7 @@ const { queryNewsFeed, queryPlayerData, querySlateData, queryTeamData, querySlat
 
 
 const emits = defineEmits([])
-const selectedSlate = ref('')
+const selectedSlate = ref({})
 const slateToIdToOverride = localStorage.getItem('slateToIdToOverride') ? JSON.parse(localStorage.getItem('slateToIdToOverride')) : {}
 const date = ref(getTodaysDate())
 const tableData = ref([])
@@ -116,6 +116,7 @@ const openOptimizer = () => {
             :playerData="playerData"
             :isDataLoaded="isDataLoaded"
             :rosterCount="rosterCount"
+            :selectedSlate="selectedSlate"
             />
       </Dialog>
     </div>

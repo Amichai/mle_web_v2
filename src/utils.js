@@ -129,9 +129,9 @@ export const splitData = (data, teamColumn = null) => {
   return toReturn
 }
 
-export const loadPlayerDataForSlate = async (slate) => {
+export const loadPlayerDataForSlate = async (slateId) => {
   const formattedDate = getTodaysDateString()
-  const data4 = await queryData(`https://amichai-dfs-data.s3.amazonaws.com/slate_player_data_${formattedDate}_${slate[2]}`)
+  const data4 = await queryData(`https://amichai-dfs-data.s3.amazonaws.com/slate_player_data_${formattedDate}_${slateId}`)
   const player_data = splitData(data4, 5)
 
   const toReturn = player_data.sort((a, b) => {

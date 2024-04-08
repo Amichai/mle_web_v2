@@ -5,6 +5,8 @@ import playIcon from '@/assets/play.png'
 import stopIcon from '@/assets/stop.png'
 import copyIcon from '@/assets/copy.png'
 import { useOptimizer } from '../composables/useOptimizer.js'
+import { useLocalStorage } from '../composables/useLocalStorage.js'
+import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet } from '../utils.js'
   
 const props = defineProps({
   slateData: {
@@ -27,13 +29,19 @@ const props = defineProps({
     type: Number,
     required: true
   },
-
+  selectedSlate: {
+    type: Object,
+    required: true
+  },
 })
 
 const emits = defineEmits([])
 
 const rosterSet = ref([])
 const maxExposurePercentage = ref('1')
+const contestParams = ref([])
+const slatePlayerData = ref([])
+const isRosterDifferenceHighlighted = ref(false)
 
 const averageRosterValue = computed(() => {
   if(rosterSet.value) {
@@ -111,7 +119,7 @@ const getContestParams = (selectedSlate) => {
   ]
 
   const matchedTemplate = uploadTemplates.filter((template) => {
-    return template.isSlateNameConsistent(selectedSlate)
+    return template.isSlateNameConsistent(props.selectedSlate.name)
   })
 
   if(matchedTemplate.length) {
@@ -121,27 +129,105 @@ const getContestParams = (selectedSlate) => {
   throw new Error('Unable to parse upload template')
 }
 
-const rostersUpdatedCallback = (rosters) => { 
+const areRostersDifferent = (rosters1, rosters2) => {
+  if(rosters1.length !== rosters2.length) {
+    return true
+  }
+
+  for(let i = 0; i < rosters1.length; i += 1) {
+    for(let j = 0; j < rosters1[i].players.length; j += 1) {
+      if(rosters1[i].players[j]?.playerId !== rosters2[i].players[j]?.playerId) {
+        return true
+      }
+    }
+  }
+  return false
 }
+
+let timeoutId = null
+const rostersUpdatedCallback = (rosters) => {
+  console.log(rosters) 
+  const areDifferent = areRostersDifferent(rosters, rosterSet.value)
+  isRosterDifferenceHighlighted.value = areDifferent
+  if(timeoutId) {
+    clearTimeout(timeoutId)
+  }
+
+  timeoutId = setTimeout(() => {
+    isRosterDifferenceHighlighted.value = false
+  }, 2000)
+
+  rosterSet.value = rosters.slice(0, props.rosterCount)
+  
+
+  constructRosterTable()
+}
+
+const site = computed(() => {
+  if(!props.selectedSlate) {
+    return ''
+  }
+  if(props.selectedSlate.name.includes('DK')) {
+    return 'dk'
+  } else if(props.selectedSlate.name.includes('FD')) {
+    return 'fd'
+  }
+
+  return ''
+})
 
 const { startStopGeneratingRosters, isGeneratingRosters, stopGeneratingRosters } = useOptimizer(rostersUpdatedCallback, maxExposurePercentage)
 
+const isPlayButtonDisabled = computed(() => {
+  return !props.isDataLoaded
+})
+
+const loadSlatePlayerData = async (slateName) => {
+  if(!props.selectedSlate) {
+    return
+  }
+
+  if(!props.isDataLoaded) {
+    return
+  }
+
+  slatePlayerData.value = setupTableData(props.playerData, props.slateData, props.teamData, props.selectedSlate.name)
+}
 
 watch(() => props.isDataLoaded, async () => {
   if(props.isDataLoaded){
-    console.log('data loaded')
+    loadSlatePlayerData(props.selectedSlate)
+    constructRosterTable()
   }
 })
 
+const playerByPlayerId = computed(() => {
+  const idToPlayer = slatePlayerData.value.reduce((acc, curr) => {
+    acc[curr.playerId] = curr
+    return acc
+  }, {})
+  
+  return idToPlayer
+})
+
+const constructRosterTable = () => {
+  if(!Object.keys(playerByPlayerId.value).length) {
+    return
+  }
+
+  contestParams.value = getContestParams(props.selectedSlate)
+
+  const { columnsToSet, costColumnIndex } = contestParams.value
+}
 
 const optimizeHandler = () => {
-  startStopGeneratingRosters(props.slateData, [], rosterSet.value, props.rosterCount, site.value, contestParams)
+  startStopGeneratingRosters(slatePlayerData.value, [], rosterSet.value, props.rosterCount, site.value, contestParams)
 }
 </script>
 
 <template>
   <div>
-    <Button class="button play-button tooltip" @click="optimizeHandler" v-show="!isGeneratingRosters">
+    <Button class="button play-button tooltip" @click="optimizeHandler" v-show="!isGeneratingRosters" :disabled="isPlayButtonDisabled">
       <img :src="playIcon" alt="optimize" width="30">
     </Button>
     <Button class="button play-button tooltip" @click="optimizeHandler" v-show="isGeneratingRosters">
