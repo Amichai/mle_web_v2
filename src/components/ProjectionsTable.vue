@@ -1,9 +1,12 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import playIcon from '@/assets/play.png'
+
 import Dropdown from 'primevue/dropdown';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Button from 'primevue/Button';
 import { useDataManager } from '../composables/useDataManager';
 
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics, getTodaysDateString } from '../utils.js'
@@ -96,13 +99,39 @@ const resetRow = (row) => {
   localStorage.setItem('slateToIdToOverride', JSON.stringify(slateToIdToOverride))
 }
 
+const rosterCount = ref(10)
+
+const rosterCountChanged = () => {
+  if(rosterCount.value < 1) {
+    rosterCount.value = 1
+  }
+
+  if(rosterCount.value > 150) {
+    rosterCount.value = 150
+  }
+}
+
+const isSlateSelected = () => {
+  return selectedSlate.value !== ''
+}
+
 </script>
 
 <template>
-  <div class="">
-    <Calendar v-model="date" />
-    <!-- <Dropdown v-model="selectedSite" :options="sites" optionLabel="name" placeholder="Select a site" class="w-full md:w-14rem dropdown" /> -->
-    <Dropdown v-model="selectedSlate" :options="slates" optionLabel="name" placeholder="Select a slate" class="w-full md:w-14rem dropdown" />
+  <div class="table-header">
+    <div class="slate-selector-area">
+      <Calendar v-model="date" />
+      <Dropdown v-model="selectedSlate" :options="slates" optionLabel="name" placeholder="Select a slate" class="w-full md:w-14rem dropdown" />
+    </div>
+
+    <div class="optimize-button-area">
+      <input class="override" type="number" v-model="rosterCount" @change="rosterCountChanged">
+      Rosters
+      <Button :disabled="!isSlateSelected()">
+        <img class="play-img" :src="playIcon" alt="optimize rosters" width="20">
+        Optimize
+      </Button>
+    </div>
   </div>
 
   <DataTable :value="tableData" sortMode="multiple" tableStyle="min-width: 50rem">
@@ -151,5 +180,27 @@ const resetRow = (row) => {
 
 .dropdown {
   width: 28rem;
+}
+
+.optimize-button-area, .slate-selector-area {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.table-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+}
+
+.play-img {
+  margin-right: 0.5rem;
+}
+
+input {
+  font-size: 0.9rem;
 }
 </style>
