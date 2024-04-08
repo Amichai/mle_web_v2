@@ -7,9 +7,8 @@ import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Sidebar from 'primevue/sidebar';
 import Divider from 'primevue/divider';
-import Calendar from 'primevue/calendar'
 import { useDataManager } from '../composables/useDataManager';
-import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics } from '../utils.js'
+import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics, getTodaysDate } from '../utils.js'
 import SlatesBuilder from './SlatesBuilder.vue';
 
 const props = defineProps()
@@ -19,21 +18,19 @@ const newsFeed = ref(null)
 
 const emits = defineEmits([])
 
-const date = ref(new Date())
-
 const { queryNewsFeed, queryPlayerData, querySlates } = useDataManager()
 
-watch(date, async () => {
-  newsFeed.value = await queryNewsFeed(date.value)
-  playerData.value = await queryPlayerData(date.value)
-})
 
+onMounted(async () => {
+  const date = getTodaysDate()
+  newsFeed.value = await queryNewsFeed(date)
+  playerData.value = await queryPlayerData(date)
+})
 </script>
 
 <template>
   <HeaderBar />
   <Divider />
-  <Calendar v-model="date" />
   <br>
   <br>
 
@@ -42,12 +39,12 @@ watch(date, async () => {
       {
         header: 'Projections',
         content: ProjectionsTable,
-        props: { date, playerData },
+        props: { },
       },
       {
         header: 'Slates',
         content: SlatesBuilder,
-        props: { date, playerData },
+        props: { playerData },
       },
     ]" />
     <Divider layout="vertical" />

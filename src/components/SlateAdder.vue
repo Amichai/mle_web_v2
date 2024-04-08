@@ -5,13 +5,10 @@ import StepperPanel from 'primevue/stepperpanel';
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown';
 import { useDataManager } from '../composables/useDataManager';
+import { getTodaysDateString } from '../utils';
 
   
 const props = defineProps({
-  date: {
-    type: Date,
-    required: true
-  },
   playerData: {
     type: Array,
     required: true
@@ -19,6 +16,8 @@ const props = defineProps({
 })
 
 const { queryNewsFeed, queryPlayerData, querySlateData, queryTeamData, querySlates } = useDataManager()
+
+const date = new Date(getTodaysDateString())
 
 const filteredRows = ref([])
 const selectedSlate = ref('')
@@ -28,7 +27,7 @@ const reader = new FileReader();
 const emits = defineEmits(['gotFocus'])
 
 const loadSlates = async () => {
-  const rows = await querySlates(props.date)
+  const rows = await querySlates(date)
   slates.value = rows.map(row =>
   ({
     name: row[0],
@@ -40,7 +39,7 @@ onMounted(async () => {
   await loadSlates()
 })
 
-watch(() => props.date, async () => {
+watch(() => date, async () => {
   await loadSlates()
 })
 

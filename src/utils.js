@@ -64,13 +64,17 @@ export const convertDateToDateString = (date) => {
 }
 
 export const getTodaysDate = () => {
-  const today = new Date();
+  return new Date('2024-03-25')
+}
+
+export const getTodaysDateString = () => {
+  const today = getTodaysDate()
   return convertDateToDateString(today)
   // return '2024-03-19'
 }
 
 export const getCurrentTimeDecimal = () => {
-  let now = new Date();
+  let now = getTodaysDate()
   
   // Convert the time to Eastern Time Zone
   let easternTime = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false }).split(':');
@@ -126,7 +130,7 @@ export const splitData = (data, teamColumn = null) => {
 }
 
 export const loadPlayerDataForSlate = async (slate) => {
-  const formattedDate = getTodaysDate()
+  const formattedDate = getTodaysDateString()
   const data4 = await queryData(`https://amichai-dfs-data.s3.amazonaws.com/slate_player_data_${formattedDate}_${slate[2]}`)
   const player_data = splitData(data4, 5)
 
@@ -284,7 +288,7 @@ export const postRosterSet = async (type, rosterSet, contests, site, slate) => {
 
 
 export const postAnalytics = async (type, data) => {
-  const date = getTodaysDate()
+  const date = getTodaysDateString()
   const time = getCurrentTimeDecimal()
   const body = JSON.stringify({
     value: encodeURI(JSON.stringify({

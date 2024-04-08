@@ -1,5 +1,5 @@
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
-import { getTodaysDate, queryData, splitData, loadPlayerDataForSlate, convertDateToDateString } from '../utils.js'
+import { getTodaysDateString, queryData, splitData, loadPlayerDataForSlate, convertDateToDateString } from '../utils.js'
 
 export function useDataManager() {
   const queryNewsFeed = async (date) => {

@@ -6,10 +6,6 @@ import SlateAdder from '../components/SlateAdder.vue';
 
   
 const props = defineProps({
-  date: {
-    type: Date,
-    required: true
-  },
   playerData: {
     type: Array,
     required: true
@@ -30,7 +26,6 @@ const emits = defineEmits([])
   Add slate
 
   <SlateAdder 
-    :date="date"
     :playerData="playerData"
   />
 </template>

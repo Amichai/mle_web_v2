@@ -6,17 +6,12 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { useDataManager } from '../composables/useDataManager';
 
-import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics } from '../utils.js'
+import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics, getTodaysDateString } from '../utils.js'
+import Calendar from 'primevue/calendar'
+import { getTodaysDate } from '../utils.js';
+
 
 const props = defineProps({
-  date: {
-    type: Date,
-    required: true
-  },
-  playerData: {
-    type: Array,
-    required: true
-  },
 })
 
 const { queryNewsFeed, queryPlayerData, querySlateData, queryTeamData, querySlates } = useDataManager()
@@ -33,8 +28,15 @@ const slateToIdToOverride = localStorage.getItem('slateToIdToOverride') ? JSON.p
 
 const slates = ref([])
 
+const date = ref(getTodaysDate())
+
+watch(() => date.value, async () => {
+  await loadSlates()
+  selectedSlate.value = slates.value[0]
+})
+
 const loadSlates = async () => {
-  const rows = await querySlates(props.date)
+  const rows = await querySlates(date.value)
   slates.value = rows.map(row =>
   ({
     name: row[0],
@@ -46,10 +48,6 @@ onMounted(async () => {
   await loadSlates()
 })
 
-watch(() => props.date, async () => {
-  await loadSlates()
-})
-
 const players = ref([])
 const tableData = ref([])
 const isLoading = ref(false)
@@ -57,10 +55,11 @@ const isLoading = ref(false)
 watch(() => selectedSlate.value, async (newSlate) => {
   tableData.value = []
   isLoading.value = true
-  const slateData = await querySlateData(newSlate.code, props.date)
-  const teamData = await queryTeamData(props.date)
+  const slateData = await querySlateData(newSlate.code, date.value)
+  const teamData = await queryTeamData(date.value)
+  const playerData = await queryPlayerData(date.value)
 
-  tableData.value = setupTableData(props.playerData, slateData, teamData, newSlate.code)
+  tableData.value = setupTableData(playerData, slateData, teamData, newSlate.code)
   isLoading.value = false
 })
 
@@ -101,6 +100,7 @@ const resetRow = (row) => {
 
 <template>
   <div class="">
+    <Calendar v-model="date" />
     <!-- <Dropdown v-model="selectedSite" :options="sites" optionLabel="name" placeholder="Select a site" class="w-full md:w-14rem dropdown" /> -->
     <Dropdown v-model="selectedSlate" :options="slates" optionLabel="name" placeholder="Select a slate" class="w-full md:w-14rem dropdown" />
   </div>
