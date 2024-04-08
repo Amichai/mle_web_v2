@@ -34,7 +34,7 @@ onMounted(async () => {
   <br>
   <br>
 
-  <div class="two-tabs">
+  <div class="two-columns">
     <TabComponent :tabs="[
       {
         header: 'Projections',
@@ -56,7 +56,7 @@ onMounted(async () => {
 
 <style scoped>
 
-.two-tabs {
+.two-columns {
   display: grid;
   grid-template-columns: 1fr auto 20rem;
 }

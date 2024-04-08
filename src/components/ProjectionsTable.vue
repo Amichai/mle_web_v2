@@ -11,7 +11,7 @@ import { useDataManager } from '../composables/useDataManager';
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet, postAnalytics, getTodaysDateString } from '../utils.js'
 import Calendar from 'primevue/calendar'
 import { getTodaysDate } from '../utils.js';
-import OptimizerComponent from './OptimizerComponent.vue';
+import OptimizerTabsComponent from './OptimizerTabsComponent.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
@@ -110,14 +110,14 @@ const openOptimizer = () => {
 <template>
   <div class="card flex justify-content-center">
       <Dialog v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
-          <OptimizerComponent 
-            :slateData="slateData"
-            :teamData="teamData"
-            :playerData="playerData"
-            :isDataLoaded="isDataLoaded"
-            :rosterCount="rosterCount"
-            :selectedSlate="selectedSlate"
-            />
+      <OptimizerTabsComponent 
+        :slateData="slateData"
+        :teamData="teamData"
+        :playerData="playerData"
+        :isDataLoaded="isDataLoaded"
+        :rosterCount="rosterCount"
+        :selectedSlate="selectedSlate"
+        />
       </Dialog>
     </div>
 

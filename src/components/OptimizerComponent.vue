@@ -7,7 +7,8 @@ import copyIcon from '@/assets/copy.png'
 import { useOptimizer } from '../composables/useOptimizer.js'
 import { useLocalStorage } from '../composables/useLocalStorage.js'
 import { convertTimeStringToDecimal, getCurrentTimeDecimal, loadPlayerDataForSlate, setupTableData, postRosterSet } from '../utils.js'
-  
+import TabComponent from '../components/TabComponent.vue';
+
 const props = defineProps({
   slateData: {
     type: Array,
@@ -233,7 +234,7 @@ const optimizeHandler = () => {
     <Button class="button play-button tooltip" @click="optimizeHandler" v-show="isGeneratingRosters">
       <img :src="stopIcon" alt="optimize" width="30">
     </Button>
-</div>
+  </div>
 </template>
 
 <style>
