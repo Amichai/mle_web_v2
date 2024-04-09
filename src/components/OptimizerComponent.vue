@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { ref, onMounted, computed, nextTick, watch, onDeactivated, onUnmounted } from 'vue'
 import Button from 'primevue/button';
 import playIcon from '@/assets/play.png'
 import stopIcon from '@/assets/stop.png'
@@ -37,6 +37,17 @@ const props = defineProps({
 })
 
 const emits = defineEmits([])
+
+onUnmounted(() => {
+  stopGeneratingRosters()
+})
+
+onMounted(() => {
+  if(props.isDataLoaded){
+    loadSlatePlayerData(props.selectedSlate)
+    constructRosterTable()
+  }
+})
 
 const rosterSet = ref([])
 const maxExposurePercentage = ref('1')
@@ -148,7 +159,9 @@ const areRostersDifferent = (rosters1, rosters2) => {
 }
 
 let timeoutId = null
+
 const rostersUpdatedCallback = (rosters) => {
+  console.log('rosters updated', rosters)
   const areDifferent = areRostersDifferent(rosters, rosterSet.value)
   isRosterDifferenceHighlighted.value = areDifferent
   if(timeoutId) {
@@ -161,7 +174,6 @@ const rostersUpdatedCallback = (rosters) => {
 
   rosterSet.value = rosters.slice(0, props.rosterCount)
   
-
   constructRosterTable()
 }
 
@@ -194,6 +206,36 @@ const loadSlatePlayerData = async (slateName) => {
   }
 
   slatePlayerData.value = setupTableData(props.playerData, props.slateData, props.teamData, props.selectedSlate.name)
+}
+
+const copyToClipboardLegacy = (text) => {
+    var textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    // console.log('Text copied to clipboard successfully: ' + text);
+}
+
+const copyRosters = () => {
+  let toWrite = ''
+  for(var i = 0; i < rosterSet.value.length; i += 1) {
+    const roster = rosterSet.value[i]
+    const players = roster.players
+    players.forEach((element) => {
+      const playerId = element.playerId
+      toWrite += site.value === 'fd' ? `"${playerId}:${element.name}",`
+      : `"${playerId}",`
+    });
+    toWrite += `${roster.value.toFixed(2)},`
+    toWrite += `${roster.cost}\n`
+  }
+  toWrite = toWrite.replace(/\r\n/g, '\n');
+  console.log(toWrite)
+  copyToClipboardLegacy(toWrite)
+
+  postRosterSet('lineupsCopied', rosterSet.value, '', site.value, props.selectedSlate)
 }
 
 watch(() => props.isDataLoaded, async () => {
@@ -246,12 +288,16 @@ const optimizeHandler = () => {
 </script>
 
 <template>
-  <div>
-    <Button class="button play-button tooltip" @click="optimizeHandler" v-show="!isGeneratingRosters" :disabled="isPlayButtonDisabled">
-      <img :src="playIcon" alt="optimize" width="30">
+  <div class="toolbar">
+    <Button class="button play-button" @click="optimizeHandler" v-show="!isGeneratingRosters" :disabled="isPlayButtonDisabled">
+      <img :src="playIcon" alt="optimize" width="20">
     </Button>
-    <Button class="button play-button tooltip" @click="optimizeHandler" v-show="isGeneratingRosters">
-      <img :src="stopIcon" alt="optimize" width="30">
+    <Button class="button play-button" @click="optimizeHandler" v-show="isGeneratingRosters">
+      <img :src="stopIcon" alt="optimize" width="20">
+    </Button>
+    
+    <Button class="button play-button" @click="copyRosters">
+      <img :src="copyIcon" alt="optimize" width="20">
     </Button>
   </div>
 
@@ -260,5 +306,10 @@ const optimizeHandler = () => {
     :tableRows="tableRows" />
 </template>
 
-<style>
+<style scoped>
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
 </style>

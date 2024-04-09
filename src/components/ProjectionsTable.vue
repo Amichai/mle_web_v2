@@ -109,7 +109,7 @@ const openOptimizer = () => {
 
 <template>
   <div class="card flex justify-content-center">
-      <Dialog v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
+      <Dialog maximizable v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
       <OptimizerTabsComponent 
         :slateData="slateData"
         :teamData="teamData"

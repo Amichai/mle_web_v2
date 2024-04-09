@@ -18,7 +18,8 @@ const emits = defineEmits([])
 const tableData = ref([])
 
 const loadTableData = () => {
-  tableData.value = props.tableRows.map(row => {
+  tableData.value = props.tableRows.map((row, idx) => {
+    row['index'] = idx + 1
     props.tableColumns.forEach((column, index) => {
       row[index] = row[index]?.name || row[index]
     })
@@ -38,6 +39,7 @@ watch(() => props.tableRows, () => {
 
 <template>
   <DataTable :value="tableRows" sortMode="multiple" tableStyle="min-width: 50rem">
+    <Column :header="'Index'" :field="`index`"></Column>
     <Column v-for="(column, index) in tableColumns" :header="column" :field="`${index}`"></Column>
 </DataTable>
 </template>

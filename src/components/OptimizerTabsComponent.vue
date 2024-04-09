@@ -34,6 +34,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits([])
+
 </script>
 
 <template>
