@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "papaparse": "^5.4.1",
+    "primeicons": "^7.0.0",
     "primevue": "^3.50.0",
     "vue": "^3.4.21"
   },
