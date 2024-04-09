@@ -27,6 +27,8 @@ onMounted(async () => {
   newsFeed.value = await queryNewsFeed(date)
   playerData.value = await queryPlayerData(date)
 })
+
+const selectedSite = ref('FD')
 </script>
 
 <template>
@@ -46,9 +48,11 @@ onMounted(async () => {
         props: { playerData },
       },
     ]" />
-    <Divider layout="vertical" />
+    <Divider class="divider" layout="vertical" />
     <NewsFeed 
-      :feed="newsFeed"/>
+      :newsRows="newsFeed"
+      :selectedSiteInitial="selectedSite"
+      />
   </div>
 </template>
 
@@ -56,7 +60,11 @@ onMounted(async () => {
 
 .two-columns {
   display: grid;
-  grid-template-columns: 1fr auto 20rem;
+  grid-template-columns: 1fr auto 25rem;
 }
 
+
+.divider {
+  margin: 0.4rem;
+}
 </style>

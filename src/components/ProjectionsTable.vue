@@ -59,7 +59,7 @@ const loadSlates = async () => {
 }
 
 onMounted(async () => {
-  await loadSlates() 
+  await loadSlates()
   selectedSlate.value = slates.value[0]
 })
 
@@ -80,19 +80,19 @@ const isNumeric = (value) => {
 }
 
 const overrideChanged = (playerRow) => {
-  if(!(selectedSlate.value in slateToIdToOverride)) {
+  if (!(selectedSlate.value in slateToIdToOverride)) {
     slateToIdToOverride[selectedSlate.value] = {}
   }
   const playerIdToOverride = slateToIdToOverride[selectedSlate.value]
   const playerId = playerRow['playerId']
   const override = playerRow['override']
-  if(isNumeric(override)) {
+  if (isNumeric(override)) {
     playerIdToOverride[playerId] = parseFloat(override)
   } else {
     delete playerIdToOverride[playerId]
     playerRow['override'] = playerRow['projection']
   }
-  
+
   localStorage.setItem('slateToIdToOverride', JSON.stringify(slateToIdToOverride))
 }
 
@@ -114,27 +114,22 @@ const openOptimizer = () => {
 
 <template>
   <div class="card flex justify-content-center">
-      <Dialog maximizable v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
-      <OptimizerTabsComponent 
-        :slateData="slateData"
-        :teamData="teamData"
-        :playerData="playerData"
-        :isDataLoaded="isDataLoaded"
-        :rosterCount="rosterCount"
-        :selectedSlate="selectedSlate"
-        />
-      </Dialog>
-    </div>
+    <Dialog maximizable v-model:visible="isOptimizerVisible" modal header="Optimizer" :style="{ width: '90%' }">
+      <OptimizerTabsComponent :slateData="slateData" :teamData="teamData" :playerData="playerData"
+        :isDataLoaded="isDataLoaded" :rosterCount="rosterCount" :selectedSlate="selectedSlate" />
+    </Dialog>
+  </div>
 
   <div class="table-header">
     <div class="slate-selector-area">
       <Calendar v-model="date" />
-      <Dropdown v-model="selectedSlate" :options="slates" optionLabel="name" placeholder="Select a slate" class="w-full md:w-14rem dropdown" />
+      <Dropdown v-model="selectedSlate" :options="slates" optionLabel="name" placeholder="Select a slate"
+        class="w-full md:w-14rem dropdown" />
     </div>
 
     <div class="optimize-button-area">
-      <InputNumber v-model="rosterCount" class="number-input" inputId="minmax-buttons" mode="decimal" showButtons 
-      :min="1" :max="150" />
+      <InputNumber v-model="rosterCount" class="number-input" inputId="minmax-buttons" mode="decimal" showButtons
+        :min="1" :max="150" />
 
       <Button :disabled="!isSlateSelected()" @click="openOptimizer">
         <img class="play-img" :src="playIcon" alt="optimize rosters" width="20">
@@ -143,9 +138,7 @@ const openOptimizer = () => {
     </div>
   </div>
 
-  <ScrollPanel
-    style="width: 100%; height: calc(100vh - 19rem); min-height: 10rem;"
-  >
+  <ScrollPanel style="width: 100%; height: calc(100vh - 19rem); min-height: 10rem;">
     <DataTable :value="tableData" sortMode="multiple" tableStyle="min-width: 50rem">
       <Column header="Name" sortable style="width: 20%">
         <template #body="slotProps">
@@ -160,22 +153,22 @@ const openOptimizer = () => {
       <Column field="salary" header="Salary" sortable style="width: 14%"></Column>
       <Column field="team" header="Team" sortable style="width: 14%">
         <template #body="slotProps">
-          <component :is="getLogo(slotProps.data.team)"  v-tooltip="slotProps.data.team" />
+          <component :is="getLogo(slotProps.data.team)" v-tooltip="slotProps.data.team" />
         </template>
       </Column>
       <Column field="projection" header="Projection" sortable style="width: 14%"></Column>
       <Column header="Override" style="width: 14%">
         <template #body="slotProps">
           <div class="override-cell">
-            <input class="override" type="number" v-model="slotProps.data.override" 
-                @change="() => overrideChanged(slotProps.data)"
-                />
-              </div>
-              <div v-if="slotProps.data.override !== slotProps.data.projection">
-              ({{ slotProps.data.override - slotProps.data.projection > 0 ? '+' : '' }}{{ (slotProps.data.override - slotProps.data.projection).toFixed(2) }})
-              <button class="reset-row" @click="() => resetRow(slotProps.data)">×</button>
-            </div>
-          </template>
+            <input class="override" type="number" v-model="slotProps.data.override"
+              @change="() => overrideChanged(slotProps.data)" />
+          </div>
+          <div v-if="slotProps.data.override !== slotProps.data.projection">
+            ({{ slotProps.data.override - slotProps.data.projection > 0 ? '+' : '' }}{{ (slotProps.data.override -
+      slotProps.data.projection).toFixed(2) }})
+            <button class="reset-row" @click="() => resetRow(slotProps.data)">×</button>
+          </div>
+        </template>
       </Column>
     </DataTable>
   </ScrollPanel>
@@ -205,7 +198,8 @@ const openOptimizer = () => {
   width: 28rem;
 }
 
-.optimize-button-area, .slate-selector-area {
+.optimize-button-area,
+.slate-selector-area {
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -236,6 +230,6 @@ input {
 }
 
 .p-tag-value {
-  line-height: normal;
+  line-height: unset;
 }
 </style>
