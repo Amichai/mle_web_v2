@@ -3,6 +3,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import HeaderBar from '../components/HeaderBar.vue';
 import TabComponent from '../components/TabComponent.vue';
 import ProjectionsTable from '../components/ProjectionsTable.vue';
+import NewsFeed from '../components/NewsFeed.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Sidebar from 'primevue/sidebar';
@@ -14,7 +15,7 @@ import SlatesBuilder from './SlatesBuilder.vue';
 const props = defineProps()
 
 const playerData = ref([])
-const newsFeed = ref(null)
+const newsFeed = ref([])
 
 const emits = defineEmits([])
 
@@ -31,8 +32,6 @@ onMounted(async () => {
 <template>
   <HeaderBar />
   <Divider />
-  <br>
-  <br>
 
   <div class="two-columns">
     <TabComponent :tabs="[
@@ -48,9 +47,8 @@ onMounted(async () => {
       },
     ]" />
     <Divider layout="vertical" />
-    <div>
-      panel
-    </div>
+    <NewsFeed 
+      :feed="newsFeed"/>
   </div>
 </template>
 

@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import playIcon from '@/assets/play.png'
-
 import Dropdown from 'primevue/dropdown';
-
+import ScrollPanel from 'primevue/scrollpanel';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { useDataManager } from '../composables/useDataManager';
@@ -34,7 +33,7 @@ const slateToIdToOverride = localStorage.getItem('slateToIdToOverride') ? JSON.p
 const date = ref(getTodaysDate())
 const tableData = ref([])
 const isLoading = ref(false)
-const isOptimizerVisible = ref(true)
+const isOptimizerVisible = ref(false)
 const rosterCount = ref(10)
 
 const slates = ref([])
@@ -144,39 +143,42 @@ const openOptimizer = () => {
     </div>
   </div>
 
-  <DataTable :value="tableData" sortMode="multiple" tableStyle="min-width: 50rem">
-    <Column header="Name" sortable style="width: 20%">
-      <template #body="slotProps">
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <div>{{ slotProps.data.name }}</div>
-          <Tag v-if="slotProps.data.status === 'O'" severity="danger" value="OUT" class="status-tag"></Tag>
-          <Tag v-if="slotProps.data.status === 'GTD'" severity="warning" value="GTD" class="status-tag"></Tag>
-        </div>
-      </template>
-    </Column>
-    <Column field="position" header="Position" sortable style="width: 14%"></Column>
-    <Column field="salary" header="Salary" sortable style="width: 14%"></Column>
-    <Column field="team" header="Team" sortable style="width: 14%">
-      <template #body="slotProps">
-        <component :is="getLogo(slotProps.data.team)"  v-tooltip="slotProps.data.team" />
-      </template>
-    </Column>
-    <Column field="projection" header="Projection" sortable style="width: 14%"></Column>
-    <Column header="Override" style="width: 14%">
-      <template #body="slotProps">
-        <div class="override-cell">
-          <input class="override" type="number" v-model="slotProps.data.override" 
-              @change="() => overrideChanged(slotProps.data)"
-              />
-            </div>
-            <div v-if="slotProps.data.override !== slotProps.data.projection">
-            ({{ slotProps.data.override - slotProps.data.projection > 0 ? '+' : '' }}{{ (slotProps.data.override - slotProps.data.projection).toFixed(2) }})
-            <button class="reset-row" @click="() => resetRow(slotProps.data)">×</button>
+  <ScrollPanel
+    style="width: 100%; height: calc(100vh - 19rem); min-height: 10rem;"
+  >
+    <DataTable :value="tableData" sortMode="multiple" tableStyle="min-width: 50rem">
+      <Column header="Name" sortable style="width: 20%">
+        <template #body="slotProps">
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div>{{ slotProps.data.name }}</div>
+            <Tag v-if="slotProps.data.status === 'O'" severity="danger" value="OUT" class="status-tag"></Tag>
+            <Tag v-if="slotProps.data.status === 'GTD'" severity="warning" value="GTD" class="status-tag"></Tag>
           </div>
         </template>
-    </Column>
-</DataTable>
-
+      </Column>
+      <Column field="position" header="Position" sortable style="width: 14%"></Column>
+      <Column field="salary" header="Salary" sortable style="width: 14%"></Column>
+      <Column field="team" header="Team" sortable style="width: 14%">
+        <template #body="slotProps">
+          <component :is="getLogo(slotProps.data.team)"  v-tooltip="slotProps.data.team" />
+        </template>
+      </Column>
+      <Column field="projection" header="Projection" sortable style="width: 14%"></Column>
+      <Column header="Override" style="width: 14%">
+        <template #body="slotProps">
+          <div class="override-cell">
+            <input class="override" type="number" v-model="slotProps.data.override" 
+                @change="() => overrideChanged(slotProps.data)"
+                />
+              </div>
+              <div v-if="slotProps.data.override !== slotProps.data.projection">
+              ({{ slotProps.data.override - slotProps.data.projection > 0 ? '+' : '' }}{{ (slotProps.data.override - slotProps.data.projection).toFixed(2) }})
+              <button class="reset-row" @click="() => resetRow(slotProps.data)">×</button>
+            </div>
+          </template>
+      </Column>
+    </DataTable>
+  </ScrollPanel>
 </template>
 
 <style>
@@ -230,7 +232,10 @@ input {
 }
 
 .status-tag {
-  height: 1.5rem;
   align-self: center;
+}
+
+.p-tag-value {
+  line-height: normal;
 }
 </style>
