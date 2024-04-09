@@ -15,6 +15,8 @@ import OptimizerTabsComponent from './OptimizerTabsComponent.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
+import Tag from 'primevue/tag';
+
 
 const props = defineProps({
 })
@@ -131,7 +133,6 @@ const openOptimizer = () => {
       <InputNumber v-model="rosterCount" class="number-input" inputId="minmax-buttons" mode="decimal" showButtons 
       :min="1" :max="150" />
 
-      Rosters
       <Button :disabled="!isSlateSelected()" @click="openOptimizer">
         <img class="play-img" :src="playIcon" alt="optimize rosters" width="20">
         Optimize
@@ -140,7 +141,15 @@ const openOptimizer = () => {
   </div>
 
   <DataTable :value="tableData" sortMode="multiple" tableStyle="min-width: 50rem">
-    <Column field="name" header="Name" sortable style="width: 14%"></Column>
+    <Column header="Name" sortable style="width: 20%">
+      <template #body="slotProps">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <div>{{ slotProps.data.name }}</div>
+          <Tag v-if="slotProps.data.status === 'O'" severity="danger" value="OUT" class="status-tag"></Tag>
+          <Tag v-if="slotProps.data.status === 'GTD'" severity="warning" value="GTD" class="status-tag"></Tag>
+        </div>
+      </template>
+    </Column>
     <Column field="position" header="Position" sortable style="width: 14%"></Column>
     <Column field="salary" header="Salary" sortable style="width: 14%"></Column>
     <Column field="team" header="Team" sortable style="width: 14%"></Column>
@@ -158,7 +167,6 @@ const openOptimizer = () => {
           </div>
         </template>
     </Column>
-    <Column field="status" header="Status" sortable style="width: 14%"></Column>
 </DataTable>
 
 </template>
@@ -211,5 +219,10 @@ input {
 
 .p-inputnumber-input {
   width: 4rem;
+}
+
+.status-tag {
+  height: 1.5rem;
+  align-self: center;
 }
 </style>

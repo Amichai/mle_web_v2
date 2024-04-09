@@ -6,6 +6,7 @@ import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown';
 import { useDataManager } from '../composables/useDataManager';
 import { getTodaysDateString } from '../utils';
+import uploadIcon from '@/assets/upload.png'
 
   
 const props = defineProps({
@@ -43,7 +44,7 @@ watch(() => date, async () => {
   await loadSlates()
 })
 
-const uploadSlateFile = (evt) => {
+const slateFileUploaded = (evt) => {
   emits('gotFocus', selectedSlate.value)
   const files = evt.target.files; // FileList object
   const f = files[0];
@@ -79,6 +80,10 @@ const uploadSlateFile = (evt) => {
   reader.readAsText(f);
 }
 
+const uploadSlateFile = () =>  {
+  document.getElementById('formFileSlateFile').click();
+}
+
 </script>
 
 <template>
@@ -100,14 +105,26 @@ const uploadSlateFile = (evt) => {
                 <template #content="{ prevCallback }">
                     <div class="flex flex-column h-12rem">
                         <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
-                          <div class="input-file-row" v-show="selectedSlate && !filteredRows.length">
-                            <input class="form-control" @change="uploadSlateFile" type="file" id="formFile">
+                          <div class="input-file-row" v-show="(selectedSlate && !filteredRows.length) || true"
+                          >
+                          <div class="file-upload-wrapper">
+                            <Button class="button upload-button tooltip" 
+                            severity="secondary"
+                            @click="uploadSlateFile">
+                              <img :src="uploadIcon" alt="upload projections" width="40">
+                              <span class="tooltiptext">
+                                Upload projections
+                              </span>
+                            </Button>
+                            <input class="form-control-projections" type="file" 
+                            @change="slateFileUploaded"
+                            id="formFileSlateFile">
                           </div>
-
+                          </div>
                         </div>
                     </div>
                     <div class="flex pt-4 justify-content-between">
-                        <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                        <Button label="Back" severity="primary" icon="pi pi-arrow-left" @click="prevCallback" />
                     </div>
                 </template>
             </StepperPanel>
@@ -118,5 +135,9 @@ const uploadSlateFile = (evt) => {
 <style scoped>
 .p-stepper {
     flex-basis: 50rem;
+}
+
+.form-control-projections {
+  display: none;
 }
 </style>
