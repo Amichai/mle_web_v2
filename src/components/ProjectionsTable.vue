@@ -16,10 +16,14 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
 import Tag from 'primevue/tag';
+import { useLogoProvider } from '../composables/useLogoProvider.js'
 
 
 const props = defineProps({
 })
+
+const { getLogo } = useLogoProvider()
+
 
 const { queryNewsFeed, queryPlayerData, querySlateData, queryTeamData, querySlates } = useDataManager()
 
@@ -152,7 +156,11 @@ const openOptimizer = () => {
     </Column>
     <Column field="position" header="Position" sortable style="width: 14%"></Column>
     <Column field="salary" header="Salary" sortable style="width: 14%"></Column>
-    <Column field="team" header="Team" sortable style="width: 14%"></Column>
+    <Column field="team" header="Team" sortable style="width: 14%">
+      <template #body="slotProps">
+        <component :is="getLogo(slotProps.data.team)"  v-tooltip="slotProps.data.team" />
+      </template>
+    </Column>
     <Column field="projection" header="Projection" sortable style="width: 14%"></Column>
     <Column header="Override" style="width: 14%">
       <template #body="slotProps">

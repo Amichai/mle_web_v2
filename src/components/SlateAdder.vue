@@ -46,6 +46,10 @@ watch(() => date, async () => {
   await loadSlates()
 })
 
+const cancelSlate = () => {
+
+}
+
 const slateFileUploaded = (evt) => {
   emits('gotFocus', selectedSlate.value)
   const files = evt.target.files; // FileList object
@@ -115,6 +119,7 @@ const uploadSlateFile = () =>  {
                             severity="secondary"
                             @click="uploadSlateFile">
                               <img :src="uploadIcon" alt="upload projections" width="40">
+                              Upload CSV
                             </Button>
                             <input class="form-control-projections" type="file" 
                             @change="slateFileUploaded"
