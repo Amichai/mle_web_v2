@@ -7,6 +7,8 @@ import dklogo from '@/assets/draftkings.png'
 import fdlogo from '@/assets/fanduel.png'
 import sync from '@/assets/sync.png'
 import discord from '@/assets/discord-icon.png'
+import OverlayPanel from 'primevue/overlaypanel';
+import PlayerInfoCard from './PlayerInfoCard.vue';
 
 const props = defineProps({
   newsRows: {
@@ -21,6 +23,12 @@ const props = defineProps({
 
 const selectedSite = ref(props.selectedSiteInitial)
 const scrollPanelRef = ref(null)
+const op = ref();
+
+const toggle = (event, idx, name) => {
+  // debugger
+  op.value[idx].toggle(event);
+}
 
 watch(() => props.selectedSiteInitial, (newVal) => {
   selectedSite.value = newVal
@@ -108,10 +116,10 @@ const formatRows = (rows) => {
       const dkDiff = (dkFinal - dkInitial).toFixed(2)
 
       if ((fdInitial > 13 || fdFinal > 13) && Math.abs(fdDiff) > 0.3) {
-        newRows.push([`${name} ${fdInitial.toFixed(2)} → ${fdFinal.toFixed(2)} (${fdDiff > 0 ? '+' : ''}${fdDiff})`, fdDiff, 'fd', team])
+        newRows.push([`${name} ${fdInitial.toFixed(2)} → ${fdFinal.toFixed(2)} (${fdDiff > 0 ? '+' : ''}${fdDiff})`, fdDiff, 'fd', team, name])
       }
       if ((dkInitial > 13 || dkFinal > 13) && Math.abs(dkDiff) > 0.3) {
-        newRows.push([`${name} ${dkInitial.toFixed(2)} → ${dkFinal.toFixed(2)} (${fdDiff > 0 ? '+' : ''}${dkDiff})`, dkDiff, 'dk', team])
+        newRows.push([`${name} ${dkInitial.toFixed(2)} → ${dkFinal.toFixed(2)} (${fdDiff > 0 ? '+' : ''}${dkDiff})`, dkDiff, 'dk', team, name])
       }
     })
 
@@ -123,6 +131,7 @@ const formatRows = (rows) => {
       diff: row[1],
       site: row[2],
       team: row[3],
+      name: row[4],
     }))]
   })
 }
@@ -190,8 +199,15 @@ const refreshProjections = () => {
       <div class="feed" id="feed">
         <div v-for="(row, idx) in newsRowsFiltered" :key="idx">
           <p
-            :class="[row.diff > 1 && 'highlight-1', row.diff < -1 && 'highlight-2', !row.diff && 'bold-text', row.isTimeString && 'underline-text', 'feed-row']">
+            :class="[row.diff > 1 && 'highlight-1', row.diff < -1 && 'highlight-2', !row.diff && 'bold-text', row.isTimeString && 'underline-text', 'feed-row']"
+            >
             {{ row.text }}
+            <!-- <OverlayPanel ref="op" v-if="row.name" :data="row.name">
+              @click="(evt) => toggle(evt, idx, row.name)"
+              <PlayerInfoCard
+                :name="row.name"
+              />
+            </OverlayPanel> -->
           </p>
         </div>
       </div>
@@ -249,6 +265,7 @@ const refreshProjections = () => {
 
 .feed-row {
   margin: 0;
+  cursor: pointer;
 }
 
 .news-feed {
@@ -297,5 +314,6 @@ const refreshProjections = () => {
 
 .underline-text {
   text-decoration: underline;
+  font-size: 1.1rem;
 }
 </style>
