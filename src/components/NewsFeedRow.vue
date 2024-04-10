@@ -14,14 +14,35 @@ const props = defineProps({
   },
 })
 
+const nameToStatusAndTeam = ref({});
+
+onMounted(() => {
+  setupPlayerData();
+})
+
+watch(() => props.playerData, () => {
+  setupPlayerData();
+})
+
 const setupPlayerData = () => {
-  
+  if(Object.keys(nameToStatusAndTeam.value).length > 0) {
+    return;
+  }
+  props.playerData.forEach(player => {
+    const name = player[0]
+    const team = player[1]
+    const status = player[4]
+
+    nameToStatusAndTeam.value[name] = {
+      status,
+      team,
+    }
+  })
 }
 
 const op = ref();
 
 const toggle = (event) => {
-  console.log(props.playerData)
   op.value?.toggle(event);
 }
 
@@ -33,7 +54,7 @@ const emits = defineEmits([])
     @click="toggle">
     {{ row.text }}
     <OverlayPanel ref="op" v-if="row.name" :data="row.name">
-      <PlayerInfoCard :name="row.name" :playerData="playerData" />
+      <PlayerInfoCard :name="row.name" :playerInfo="nameToStatusAndTeam[row.name] ?? {}" />
     </OverlayPanel>
   </p>
 </template>
