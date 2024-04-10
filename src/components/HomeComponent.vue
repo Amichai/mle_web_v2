@@ -52,6 +52,7 @@ const selectedSite = ref('FD')
     <NewsFeed 
       :newsRows="newsFeed"
       :selectedSiteInitial="selectedSite"
+      :playerData="playerData"
       />
   </div>
 </template>

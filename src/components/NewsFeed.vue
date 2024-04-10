@@ -7,8 +7,7 @@ import dklogo from '@/assets/draftkings.png'
 import fdlogo from '@/assets/fanduel.png'
 import sync from '@/assets/sync.png'
 import discord from '@/assets/discord-icon.png'
-import OverlayPanel from 'primevue/overlaypanel';
-import PlayerInfoCard from './PlayerInfoCard.vue';
+import NewsFeedRow from './NewsFeedRow.vue';
 
 const props = defineProps({
   newsRows: {
@@ -18,17 +17,15 @@ const props = defineProps({
   selectedSiteInitial: {
     type: String,
     required: true
+  },
+  playerData: {
+    type: Array,
+    required: true
   }
 })
 
 const selectedSite = ref(props.selectedSiteInitial)
 const scrollPanelRef = ref(null)
-const op = ref();
-
-const toggle = (event, idx, name) => {
-  // debugger
-  op.value[idx].toggle(event);
-}
 
 watch(() => props.selectedSiteInitial, (newVal) => {
   selectedSite.value = newVal
@@ -198,17 +195,7 @@ const refreshProjections = () => {
         }">
       <div class="feed" id="feed">
         <div v-for="(row, idx) in newsRowsFiltered" :key="idx">
-          <p
-            :class="[row.diff > 1 && 'highlight-1', row.diff < -1 && 'highlight-2', !row.diff && 'bold-text', row.isTimeString && 'underline-text', 'feed-row']"
-            >
-            {{ row.text }}
-            <!-- <OverlayPanel ref="op" v-if="row.name" :data="row.name">
-              @click="(evt) => toggle(evt, idx, row.name)"
-              <PlayerInfoCard
-                :name="row.name"
-              />
-            </OverlayPanel> -->
-          </p>
+          <NewsFeedRow :row="row" :playerData="playerData" />
         </div>
       </div>
     </ScrollPanel>
@@ -265,7 +252,6 @@ const refreshProjections = () => {
 
 .feed-row {
   margin: 0;
-  cursor: pointer;
 }
 
 .news-feed {

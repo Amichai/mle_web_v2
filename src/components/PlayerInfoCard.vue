@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import StatusTag from './StatusTag.vue';
   
 const props = defineProps({
   name: {
@@ -13,9 +14,6 @@ const emits = defineEmits([])
 
 <template>
   <div>
-    test
-    test
-    testing123
     {{ name }}
   </div>
 </template>

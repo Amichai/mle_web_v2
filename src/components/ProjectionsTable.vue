@@ -14,8 +14,8 @@ import OptimizerTabsComponent from './OptimizerTabsComponent.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
-import Tag from 'primevue/tag';
 import { useLogoProvider } from '../composables/useLogoProvider.js'
+import StatusTag from './StatusTag.vue'
 
 
 const props = defineProps({
@@ -144,8 +144,7 @@ const openOptimizer = () => {
         <template #body="slotProps">
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <div>{{ slotProps.data.name }}</div>
-            <Tag v-if="slotProps.data.status === 'O'" severity="danger" value="OUT" class="status-tag"></Tag>
-            <Tag v-if="slotProps.data.status === 'GTD'" severity="warning" value="GTD" class="status-tag"></Tag>
+            <StatusTag :status="slotProps.data.status ?? ''" />
           </div>
         </template>
       </Column>
